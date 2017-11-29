@@ -151,6 +151,7 @@ let
     file dockerimage ${rawDockerImage}
     EOF
   '';
+  connect = import ./scripts/launch/connect-to-cluster/default.nix;
   upstream = {
     stack2nix = import (pkgs.fetchFromGitHub {
       owner = "input-output-hk";
@@ -160,5 +161,11 @@ let
     }) { inherit pkgs; };
     inherit (pkgs) purescript;
     inherit rawDockerImage dockerImage;
+    connectScripts = {
+      mainnetWallet = connect { };
+      mainnetExplorer = connect { executable = "explorer"; };
+      stagingWallet = connect { environment = "mainnet-staging"; };
+      stagingExplorer = connect { executable = "explorer"; environment = "mainnet-staging"; };
+    };
   };
 in cardanoPkgs // upstream

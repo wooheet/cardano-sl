@@ -26,13 +26,9 @@ let
     stack2nix = supportedSystems;
     purescript = supportedSystems;
     dockerImage = [ "x86_64-linux" ];
+    connectScripts.mainnetWallet = [ "x86_64-linux" ];
+    connectScripts.mainnetExplorer = [ "x86_64-linux" ];
+    connectScripts.stagingWallet = [ "x86_64-linux" ];
+    connectScripts.stagingExplorer = [ "x86_64-linux" ];
   };
-  connect = import ./scripts/launch/connect-to-cluster/default.nix;
-  connectScripts = {
-    mainnetWallet = connect { };
-    mainnetExplorer = connect { executable = "explorer"; };
-    stagingWallet = connect { environment = "mainnet-staging"; };
-    stagingExplorer = connect { executable = "explorer"; environment = "mainnet-staging"; };
-  };
-in { connect = connectScripts; }
-   // mapTestOn platforms
+in mapTestOn platforms
