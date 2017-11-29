@@ -151,7 +151,7 @@ let
     file dockerimage ${rawDockerImage}
     EOF
   '';
-  connect = import ./scripts/launch/connect-to-cluster/default.nix;
+  connect = args: (import ./scripts/launch/connect-to-cluster/default.nix) { inherit gitrev; } // args;
   upstream = {
     stack2nix = import (pkgs.fetchFromGitHub {
       owner = "input-output-hk";
