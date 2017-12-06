@@ -33,6 +33,7 @@ let
     mainnetExplorer = connect { executable = "explorer"; };
     stagingWallet = connect { environment = "mainnet-staging"; };
     stagingExplorer = connect { executable = "explorer"; environment = "mainnet-staging"; };
+    devnet = connect { environment = "devnet"; };
   };
 in { connect = connectScripts; }
    // mapTestOn platforms
