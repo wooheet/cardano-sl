@@ -334,3 +334,127 @@ Tx 48a404c7 with
         TxOut 1082080442928567 coin(s) -> 3XsWSbV7z5bxQVv3YScPKuv6AQbNswgu4phHXmqcnQDnt9QC1WkrnvHsLkRxQVcPE78iXVUymMhYx72EL9jDFfvjhrerXQqc2Y31ab5pLhhfWcfbKwQNXzmdcZZuFR6cJecqSvjeVSU3pG4L
     ]
 ```
+
+## Address Extraction
+
+This is another real-life example of transaction, now we obtain recipient address.
+
+As mentioned above recipient address is a part of transaction output. So we have to
+preform 3 steps:
+
+1.  extract an output (in the simplest case there is one output),
+2.  extract an address from it,
+3.  convert an address into final form.
+
+Let's consider an example of transaction:
+
+```
+Tx bd1b9526 with
+    inputs [
+        TxInUtxo e981442c #17306
+    ],
+    outputs: [
+        TxOut 15597252095955044 coin(s) -> AL91N9VXRTCypFouG2KjJvJuvKmUC4p3XcpHnYETWRG5HJVpi2ixeN1nG5EWtbJCH71YjzhqHKcsmmPYGRjy8nHDe2i17BEf9hTqDDLmcFVbHxx1GW9
+    ]
+```
+
+Text `AL91N9VXRTCypFouG2KjJvJuvKmUC4p3XcpHnYETWRG5HJVpi2ixeN1nG5EWtbJCH71YjzhqHKcsmmPYGRjy8nHDe2i17BEf9hTqDDLmcFVbHxx1GW9`
+is recipient address in its final form, as it shown in the wallet before sending funds.
+
+Haskell-based representation of transaction, for more details:
+
+```
+_txInputs = TxInUtxo {
+    txInHash = AbstractHash e981442c2be40475bb42193ca35907861d90715854de6fcba767b98f1789b512,
+    txInIndex = 17306
+} :| [],
+_txOutputs = TxOut {
+    txOutAddress = Address {
+        addrRoot = AbstractHash e7fe8e468d2249f18cd7bf9aec0d4374b7d3e18609ede8589f82f7f0,
+        addrAttributes = Attributes {
+            data: AddrAttributes {
+                aaPkDerivationPath = Just (HDAddressPayload {getHDAddressPayload = "\192h\142"}),
+                aaStakeDistribution = SingleKeyDistr (AbstractHash 240596b9b63fc010c06fbe92cf6f820587406534795958c411e662dc)
+            }
+        },
+        addrType = ATPubKey
+    },
+    txOutValue = Coin {
+        getCoin = 15597252095955044
+    }
+} :| [],
+_txAttributes = Attributes { data: () }
+```
+
+Binary CBOR-representation of transaction, HEX-form:
+
+```
+839f8200d8185826825820e981442c2be40475bb42193ca35907861d90715854de6fcba767b98f1789b51219439aff9f8282d818584a83581ce7fe8e468d2249f18cd7bf9aec0d4374b7d3e18609ede8589f82f7f0a20058208200581c240596b9b63fc010c06fbe92cf6f820587406534795958c411e662dc014443c0688e001a6768cc861b0037699e3ea6d064ffa0
+```
+
+CBOR bytes representation:
+
+```
+83                                      # array(3)
+   9F                                   # array(*)
+      82                                # array(2)
+         00                             # unsigned(0)
+         D8 18                          # tag(24)
+            58 26                       # bytes(38)
+               825820E981442C2BE40475BB42193CA35907861D90715854DE6FCBA767B98F1789B51219439A
+      FF                                # primitive(*)
+   9F                                   # array(*)
+      82                                # array(2)
+         82                             # array(2)
+            D8 18                       # tag(24)
+               58 4A                    # bytes(74)
+                  83581CE7FE8E468D2249F18CD7BF9AEC0D4374B7D3E18609EDE8589F82F7F0A20058208200581C240596B9B63FC010C06FBE92CF6F820587406534795958C411E662DC014443C0688E00
+            1A 6768CC86                 # unsigned(1734921350)
+         1B 0037699E3EA6D064            # unsigned(15597252095955044)
+      FF                                # primitive(*)
+   A0                                   # map(0)
+```
+
+Based on transaction's structure mentioned above we can extract a single output:
+
+```
+8282d818584a83581ce7fe8e468d2249f18cd7bf9aec0d4374b7d3e18609ede8589f82f7f0a20058208200581c240596b9b63fc010c06fbe92cf6f820587406534795958c411e662dc014443c0688e001a6768cc861b0037699e3ea6d064
+```
+
+CBOR bytes representation:
+
+```
+82                                      # array(2)
+   82                                   # array(2)
+      D8 18                             # tag(24)
+         58 4A                          # bytes(74)
+            83581CE7FE8E468D2249F18CD7BF9AEC0D4374B7D3E18609EDE8589F82F7F0A20058208200581C240596B9B63FC010C06FBE92CF6F820587406534795958C411E662DC014443C0688E00
+      1A 6768CC86                       # unsigned(1734921350)
+   1B 0037699E3EA6D064                  # unsigned(15597252095955044)
+```
+
+And then we can extract a full address from it:
+
+```
+82d818584a83581ce7fe8e468d2249f18cd7bf9aec0d4374b7d3e18609ede8589f82f7f0a20058208200581c240596b9b63fc010c06fbe92cf6f820587406534795958c411e662dc014443c0688e001a6768cc86
+```
+
+Please note that full address (let's call if `FA`) is an address itself (address' root, attributes and type) _and_ its CRC32.
+CBOR bytes representation clarifies it:
+
+```
+82                                      # array(2)
+   D8 18                                # tag(24)
+      58 4A                             # bytes(74)
+         83581CE7FE8E468D2249F18CD7BF9AEC0D4374B7D3E18609EDE8589F82F7F0A20058208200581C240596B9B63FC010C06FBE92CF6F820587406534795958C411E662DC014443C0688E00
+   1A 6768CC86                          # unsigned(1734921350) -> CRC32
+```
+
+Now we have to encode `FA` into [Base58](https://en.wikipedia.org/wiki/Base58) format.
+Cardano SL uses Bitcoin Base58-alphabet. The result is:
+
+```
+AL91N9VXRTCypFouG2KjJvJuvKmUC4p3XcpHnYETWRG5HJVpi2ixeN1nG5EWtbJCH71YjzhqHKcsmmPYGRjy8nHDe2i17BEf9hTqDDLmcFVbHxx1GW9
+```
+
+This is an address in its final form.
