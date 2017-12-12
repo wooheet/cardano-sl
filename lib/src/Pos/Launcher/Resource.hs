@@ -34,7 +34,7 @@ import           Network.Transport.Concrete (concrete)
 import qualified Network.Transport.TCP as TCP
 import           System.IO (BufferMode (..), Handle, hClose, hSetBuffering)
 import qualified System.Metrics as Metrics
-import           System.Wlog (CanLog, LoggerConfig (..), WithLogger, getLoggerName, logError,
+import           System.Wlog (CanLog, LoggerConfig (..), WithLogger, askLoggerName, logError,
                               logInfo, prefixB, productionB, releaseAllHandlers, setupLogging,
                               showTidB, usingLoggerName)
 
@@ -381,7 +381,7 @@ createTransportTCP
     => TCP.TCPAddr
     -> m (Transport n, m ())
 createTransportTCP addrInfo = do
-    loggerName <- getLoggerName
+    loggerName <- askLoggerName
     let tcpParams =
             (TCP.defaultTCPParameters
              { TCP.transportConnectTimeout =

@@ -80,7 +80,7 @@ instance WithLogger m => CanLog (JsonLogT m) where
 
 instance WithLogger m => HasLoggerName (JsonLogT m) where
 
-    getLoggerName = lift getLoggerName
+    askLoggerName = lift askLoggerName
 
     modifyLoggerName f = hoist (modifyLoggerName f)
 

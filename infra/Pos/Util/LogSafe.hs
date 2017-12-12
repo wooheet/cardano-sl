@@ -93,7 +93,7 @@ instance (MonadIO m, Reifies s SelectionMode) =>
         liftIO $ logMCond name severity msg (reflect (Proxy @s))
 
 instance (HasLoggerName m) => HasLoggerName (SelectiveLogWrapped s m) where
-    getLoggerName = SelectiveLogWrapped getLoggerName
+    askLoggerName = SelectiveLogWrapped askLoggerName
     modifyLoggerName foo (SelectiveLogWrapped m) =
         SelectiveLogWrapped (modifyLoggerName foo m)
 
@@ -120,7 +120,7 @@ logMessageS
 logMessageS severity t =
     reify selectSecretLogs $ \s ->
     execSecureLogWrapped s $ do
-        name <- getLoggerName
+        name <- askLoggerName
         dispatchMessage name severity t
 
 ----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ logMessageUnsafeP
 logMessageUnsafeP severity t =
     reify selectPublicLogs $ \s ->
     execSecureLogWrapped s $ do
-        name <- getLoggerName
+        name <- askLoggerName
         dispatchMessage name severity t
 
 -- | Shortcut for 'logMessageUnsafeP' to use according severity.

@@ -93,7 +93,7 @@ import           Pos.Txp (GenericTxpLocalData, MempoolExt, MonadTxpLocal (..), T
 import           Pos.Update.Context (UpdateContext, mkUpdateContext)
 import           Pos.Util (newInitFuture, postfixLFields, postfixLFields2)
 import           Pos.Util.CompileInfo (withCompileInfo)
-import           Pos.Util.LoggerName (HasLoggerName' (..), getLoggerNameDefault,
+import           Pos.Util.LoggerName (HasLoggerName' (..), askLoggerNameDefault,
                                       modifyLoggerNameDefault)
 import           Pos.WorkMode (EmptyMempoolExt)
 
@@ -436,7 +436,7 @@ instance HasNodeType BlockTestContext where
     getNodeType _ = NodeCore -- doesn't really matter, it's for reporting
 
 instance {-# OVERLAPPING #-} HasLoggerName BlockTestMode where
-    getLoggerName = getLoggerNameDefault
+    askLoggerName = askLoggerNameDefault
     modifyLoggerName = modifyLoggerNameDefault
 
 type TestSlottingContext ctx m =
