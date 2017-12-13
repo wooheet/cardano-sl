@@ -42,8 +42,7 @@ import           Data.ByteString.Lazy (hPut)
 import           Formatting (sformat, shown, (%))
 import           Serokell.Util.Lens (WrappedM (..))
 import           System.IO (Handle)
-import           System.Wlog.CanLog (CanLog, WithLogger, logWarning)
-import           System.Wlog.LoggerNameBox (HasLoggerName (..))
+import           System.Wlog (CanLog, HasLoggerName (..), WithLogger, logWarning)
 import           Universum
 
 import           JsonLog.CanJsonLog (CanJsonLog (..))
